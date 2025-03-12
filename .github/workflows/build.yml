@@ -23,7 +23,8 @@ jobs:
           libgdk-pixbuf2.0-dev \
           libcairo2-dev \
           libpango1.0-dev \
-          libgraphene-1.0-dev
+          libgraphene-1.0-dev \
+          libgtk4-dev
     - name: Build
       run: cargo build --verbose
     - name: Run tests
