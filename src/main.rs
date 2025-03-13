@@ -1,5 +1,6 @@
 use gtk::gdk::Display;
 use gtk::CssProvider;
+use gtk::MultiSelection;
 use gtk::ScrolledWindow;
 use integer_object::IntegerObject;
 
@@ -23,7 +24,7 @@ use std::time::Duration;
 
 use adw::prelude::*;
 use adw::{Application, ApplicationWindow, HeaderBar};
-use gtk::{Box, Label, ListItem, ListView, Orientation, SignalListItemFactory, SingleSelection};
+use gtk::{Box, Label, ListItem, ListView, Orientation, SignalListItemFactory, SingleSelection, GridView};
 
 use gtk::gio;
 
@@ -129,22 +130,52 @@ fn main() {
     let application = Application::builder().application_id(APP_ID).build();
     application.connect_startup(|_| startup());
     application.connect_activate(move |app| {
-        let factory = SignalListItemFactory::new();
-        factory.connect_setup(move |_, list_item| {
+
+        // // List view.
+        // let factory = SignalListItemFactory::new();
+        // factory.connect_setup(move |_, list_item| {
+        //     let label = Label::new(None);
+        //     list_item
+        //         .downcast_ref::<ListItem>()
+        //         .expect("Needs to be ListItem")
+        //         .set_child(Some(&label));
+        // });
+        // factory.connect_bind(move |_, list_item| {
+        //     let file_object = list_item
+        //         .downcast_ref::<ListItem>()
+        //         .unwrap()
+        //         .item()
+        //         .and_downcast::<FileObject>()
+        //         .unwrap();
+
+        //     let label = list_item
+        //         .downcast_ref::<ListItem>()
+        //         .unwrap()
+        //         .child()
+        //         .and_downcast::<Label>()
+        //         .unwrap();
+        //     label.set_label(&file_object.details().to_string_lossy().to_string());
+        // });
+        // let selection_model = SingleSelection::new(Some(model.clone()));
+        // let list_view = ListView::new(Some(selection_model), Some(factory));
+
+        // Grid view.
+        let grid_view_factory = SignalListItemFactory::new();
+        grid_view_factory.connect_setup(move |_ , list_item| {
             let label = Label::new(None);
+            label.set_max_width_chars(10);
             list_item
                 .downcast_ref::<ListItem>()
                 .expect("Needs to be ListItem")
                 .set_child(Some(&label));
         });
-        factory.connect_bind(move |_, list_item| {
+        grid_view_factory.connect_bind(move |_, list_item| {
             let file_object = list_item
                 .downcast_ref::<ListItem>()
                 .unwrap()
                 .item()
                 .and_downcast::<FileObject>()
                 .unwrap();
-
             let label = list_item
                 .downcast_ref::<ListItem>()
                 .unwrap()
@@ -153,9 +184,9 @@ fn main() {
                 .unwrap();
             label.set_label(&file_object.details().to_string_lossy().to_string());
         });
-
-        let selection_model = SingleSelection::new(Some(model.clone()));
-        let list_view = ListView::new(Some(selection_model), Some(factory));
+        let grid_selection_model = MultiSelection::new(Some(model.clone()));
+        let grid_view = GridView::new(Some(grid_selection_model), Some(grid_view_factory));
+        grid_view.set_enable_rubberband(true);
 
         let scrolled_window = ScrolledWindow::builder()
             .hscrollbar_policy(gtk::PolicyType::Never)
@@ -163,7 +194,7 @@ fn main() {
             .propagate_natural_width(true)
             .min_content_width(300)
             .min_content_height(500)
-            .child(&list_view)
+            .child(&grid_view)
             .build();
 
         // Content.
