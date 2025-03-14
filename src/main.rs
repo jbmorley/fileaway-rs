@@ -2,7 +2,6 @@ use gtk::gdk::Display;
 use gtk::CssProvider;
 use gtk::MultiSelection;
 use gtk::ScrolledWindow;
-use integer_object::IntegerObject;
 
 mod file_details;
 mod integer_object;
@@ -28,11 +27,12 @@ use gtk::{Box, Label, ListItem, ListView, Orientation, SignalListItemFactory, Si
 
 use gtk::gio;
 
-const APP_ID: &str = "uk.co.jbmorley.fileaway";
+
+const APP_ID: &str = "uk.co.jbmorley.folders";
 
 fn watch(tx: async_channel::Sender<Update>) {
     // Print the initial state.
-    let path = "/home/jbmorley/Local/Files";
+    let path = "/home/jbmorley/Pictures/Artists/Grant Hutchinson";
 
     // Watch for changes.
     let (watcher_tx, watcher_rx) = channel();
@@ -131,34 +131,6 @@ fn main() {
     application.connect_startup(|_| startup());
     application.connect_activate(move |app| {
 
-        // // List view.
-        // let factory = SignalListItemFactory::new();
-        // factory.connect_setup(move |_, list_item| {
-        //     let label = Label::new(None);
-        //     list_item
-        //         .downcast_ref::<ListItem>()
-        //         .expect("Needs to be ListItem")
-        //         .set_child(Some(&label));
-        // });
-        // factory.connect_bind(move |_, list_item| {
-        //     let file_object = list_item
-        //         .downcast_ref::<ListItem>()
-        //         .unwrap()
-        //         .item()
-        //         .and_downcast::<FileObject>()
-        //         .unwrap();
-
-        //     let label = list_item
-        //         .downcast_ref::<ListItem>()
-        //         .unwrap()
-        //         .child()
-        //         .and_downcast::<Label>()
-        //         .unwrap();
-        //     label.set_label(&file_object.details().to_string_lossy().to_string());
-        // });
-        // let selection_model = SingleSelection::new(Some(model.clone()));
-        // let list_view = ListView::new(Some(selection_model), Some(factory));
-
         // Grid view.
         let grid_view_factory = SignalListItemFactory::new();
         grid_view_factory.connect_setup(move |_ , list_item| {
@@ -206,7 +178,7 @@ fn main() {
 
         let window = ApplicationWindow::builder()
             .application(app)
-            .title("First App")
+            .title("Folders")
             .content(&content)
             .build();
         window.present();
